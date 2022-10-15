@@ -6,6 +6,14 @@ from .models import Sweets
 def home(request, *args, **kwargs):
     return render(request, "pages/home.html", context={})
 
+def sweet_list(request, *args, **kwargs):
+    qs = Sweets.objects.all()
+    s_list = [{"id": x.id, "content": x.content} for x in qs]
+    data = {
+        "response": s_list
+    }
+    return JsonResponse(data)
+
 def sweet_details(request, sweet_id, *args, **kwargs):
     data = {
         "id": sweet_id,
