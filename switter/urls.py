@@ -15,10 +15,11 @@ Including another URLconf
 """
 
 from django.urls import path
-from sweets.views import home, sweet_details, sweet_list
+from sweets.views import home, sweet_details, sweet_list, sweet_create_view
 
 urlpatterns = [
     path('', home),
+    path("create-sweet", sweet_create_view),
     path('sweets/', sweet_list),
     path('sweets/<int:sweet_id>', sweet_details),
 ]

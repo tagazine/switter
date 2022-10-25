@@ -1,5 +1,61 @@
-{% extends 'base.html' %}
+{% extends 'base.html' %} {% block content %}
+<div class="row text-center">
+  <div class="col">
+    <h2>Welcome to Switter</h2></div>
+</div>
 
-{% block content %}
-Welcome to Switter
+<div class="row" id="sweets">Loading ...</div>
+
+<script>
+  const sweetsElement = document.getElementById("sweets");
+
+  const xhr = new XMLHttpRequest();
+  const method = "GET";
+  const url = "/sweets";
+  const responseType = "json";
+
+  function handleLike(sweet_id, currentCount) {
+    console.log(sweet_id, currentCount);
+  }
+
+  function likeBtn(sweet) {
+    return (
+      "<button class='btn btn-primary btn-small' onclick=handleLike(" +
+      sweet.id +
+      "," +
+      sweet.likes +
+      ")>" +
+      sweet.likes +
+      " Like</button>"
+    );
+  }
+
+  function formatSweetElement(sweet) {
+    var formattedSweet =
+      "<div class='col-12 col-md-10 mx-auto border rounded py-3 mb-4 sweet' id='sweet-'>" +
+      sweet.id +
+      "<p>" +
+      sweet.content +
+      "</p><div class='btn group bg-switter'>" +
+      likeBtn(sweet) +
+      "</div></div>";
+    return formattedSweet;
+  }
+
+  xhr.responseType = responseType;
+  xhr.open(method, url);
+  xhr.onload = function () {
+    const serverResponse = xhr.response;
+    const listedItems = serverResponse.response;
+    var finalSweetStr = "";
+    var i;
+    for (i = 0; i < listedItems.length; i++) {
+      var sweetObj = listedItems[i];
+      var currentItem = formatSweetElement(sweetObj);
+      finalSweetStr += currentItem;
+    }
+    sweetsElement.innerHTML = finalSweetStr;
+  };
+  xhr.send();
+</script>
 {% endblock content %}
