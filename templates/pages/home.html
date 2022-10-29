@@ -1,18 +1,75 @@
 {% extends 'base.html' %} {% block content %}
 <div class="row text-center">
   <div class="col">
-    <h2>Welcome to Switter</h2></div>
+    <h2>Welcome to Switter</h2>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="'col-md-4 mx-auto col-10">
+    <form
+      class="form"
+      id="sweet-create-form"
+      method="POST"
+      action="/create-sweet"
+    >
+      {% csrf_token %}
+      <input type="hidden" value="/" name="next" />
+      <textarea
+        class="form-control"
+        name="content"
+        placeholder="Your Sweet"
+      ></textarea>
+      <button type="submit" class="btn btn-primary">Sweet</button>
+    </form>
+  </div>
 </div>
 
 <div class="row" id="sweets">Loading ...</div>
 
 <script>
-  const sweetsElement = document.getElementById("sweets");
+  function handleFormDidSubmit(event) {
+    event.preventDefault();
+    const myForm = event.target
+    const myFormData = new FormData(myForm)
+    const url = myForm.getAttribute("action")
+    const method = myForm.getAttribute("method")
+    const xhr = new XMLHttpRequest()
+    xhr.open(method, url);
+    xhr.onload = function () {
+      const serverResponse = xhr.response;
+    }
+    xhr.send(myFormData);
+  }
+  const sweetCreateFormEL = document.getElementById("sweet-create-form");
 
-  const xhr = new XMLHttpRequest();
-  const method = "GET";
-  const url = "/sweets";
-  const responseType = "json";
+  sweetCreateFormEL.addEventListener("submit", handleFormDidSubmit);
+  const sweetsEl = document.getElementById("sweets");
+
+  const loadSweets = function (sweetsElement) {
+    const xhr = new XMLHttpRequest();
+    const method = "GET";
+    const url = "/sweets";
+    const responseType = "json";
+
+    xhr.responseType = responseType;
+    xhr.open(method, url);
+    xhr.onload = function () {
+      const serverResponse = xhr.response;
+      const listedItems = serverResponse.response;
+      var finalSweetStr = "";
+      var i;
+      for (i = 0; i < listedItems.length; i++) {
+        var sweetObj = listedItems[i];
+        var currentItem = formatSweetElement(sweetObj);
+        finalSweetStr += currentItem;
+      }
+      sweetsElement.innerHTML = finalSweetStr;
+    };
+    xhr.send();
+  };
+
+  loadSweets(sweetsEl);
 
   function handleLike(sweet_id, currentCount) {
     console.log(sweet_id, currentCount);
@@ -41,21 +98,5 @@
       "</div></div>";
     return formattedSweet;
   }
-
-  xhr.responseType = responseType;
-  xhr.open(method, url);
-  xhr.onload = function () {
-    const serverResponse = xhr.response;
-    const listedItems = serverResponse.response;
-    var finalSweetStr = "";
-    var i;
-    for (i = 0; i < listedItems.length; i++) {
-      var sweetObj = listedItems[i];
-      var currentItem = formatSweetElement(sweetObj);
-      finalSweetStr += currentItem;
-    }
-    sweetsElement.innerHTML = finalSweetStr;
-  };
-  xhr.send();
 </script>
 {% endblock content %}
